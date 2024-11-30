@@ -2,6 +2,7 @@ import pygame
 import sys
 import random
 from player import Player
+from pickables import PickItems
 from enemy import Enemy, EnemyType
 #from spaceship import Spaceship
 
@@ -37,6 +38,7 @@ class Game:
 
         self.clock = pygame.time.Clock()
         self.running = True
+        self.picked_map = {}
 
         # Initialize the big box boundaries
         self.big_box_x = (SCREEN_WIDTH - BIG_BOX_WIDTH) // 2
@@ -52,10 +54,10 @@ class Game:
 
         # Define controls for each player
         self.player_controls = [
-            {'left': pygame.K_LEFT, 'right': pygame.K_RIGHT, 'up': pygame.K_UP, 'down': pygame.K_DOWN},
-            {'left': pygame.K_s, 'right': pygame.K_f, 'up': pygame.K_e, 'down': pygame.K_d},
-            {'left': pygame.K_j, 'right': pygame.K_l, 'up': pygame.K_i, 'down': pygame.K_k},
-            {'left': pygame.K_KP4, 'right': pygame.K_KP6, 'up': pygame.K_KP8, 'down': pygame.K_KP5}
+            {'left': pygame.K_LEFT, 'right': pygame.K_RIGHT, 'up': pygame.K_UP, 'down': pygame.K_DOWN,'pick': pygame.K_DELETE,'use':pygame.K_END},
+            {'left': pygame.K_s, 'right': pygame.K_f, 'up': pygame.K_e, 'down': pygame.K_d,'pick': pygame.K_q,'use':pygame.K_w},
+            {'left': pygame.K_j, 'right': pygame.K_l, 'up': pygame.K_i, 'down': pygame.K_k,'pick': pygame.K_y,'use':pygame.K_u},
+            {'left': pygame.K_KP4, 'right': pygame.K_KP6, 'up': pygame.K_KP8, 'down': pygame.K_KP5,'pick': pygame.K_KP1,'use':pygame.K_KP0}
         ]
 
         # Initialize players at different positions
@@ -78,6 +80,17 @@ class Game:
                 controls=self.player_controls[i]
             )
             self.players.append(player)
+        
+        self.pickables = []
+        for i in range(4):
+                pickable = PickItems(
+                    x=100 + 100 * i,
+                    y=100 + i*10,
+                    width=10,
+                    height=10,
+                    name = 'item'+str(i)
+                )
+                self.pickables.append(pickable)
 
         # Initialize enemy list
         self.enemies = []
@@ -108,7 +121,29 @@ class Game:
         for player in self.players:
             player.move(keys)
             player.apply_gravity()
-            player.decrease_oxy_level()
+        
+        self.handle_player_actions()
+
+    def handle_player_actions(self):
+        for player in self.players:
+            if player.action == 'pick':
+                # Try to pick up an item
+                for pickable in self.pickables:
+                    if player.rect.colliderect(pickable.rect) and not pickable.picked:
+                        player.held_item = pickable
+                        self.picked_map[player] = pickable
+                        pickable.picked = True
+                        break
+                player.action = None  # Reset action after handling
+            elif player.action == 'drop':
+                # Drop the held item
+                if player in self.picked_map:
+                    pickable = self.picked_map.pop(player)
+                    pickable.x = 50
+                    pickable.y = 50
+                    pickable.picked = False
+                    player.held_item = None
+                player.action = None  # Reset action after handling
 
         # Randomly spawn enemies
         if random.randint(1, 100) <= 5:  # 5% chance of spawning an enemy per frame
@@ -146,6 +181,21 @@ class Game:
         # Draw each player with a unique color
         for i, player in enumerate(self.players):
             player.draw(self.screen, PLAYER_COLORS[i])
+        
+        # Draw pickables
+        for pickable in self.pickables:
+            if pickable.picked:
+                # Draw the pickable at the player's position
+                player = None
+                for p, item in self.picked_map.items():
+                    if item == pickable:
+                        player = p
+                        break
+                if player:
+                    pickable.redraw(self.screen, player)
+            else:
+                # Draw the pickable at its position
+                pickable.draw(self.screen)
 
         # Draw each enemy
         for enemy in self.enemies:
@@ -164,7 +214,6 @@ class Game:
         # Quit Pygame
         pygame.quit()
         sys.exit()
-
 
 if __name__ == "__main__":
     game = Game()
