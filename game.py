@@ -1,11 +1,16 @@
 import pygame
 import sys
+import random
 from player import Player
 from pickables import PickItems
+from enemy import Enemy, EnemyType
+#from spaceship import Spaceship
+
+GAME_NAME = 'EventHorizon24'
 
 # Screen dimensions
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 1920
+SCREEN_HEIGHT = 1080
 
 # Colors
 WHITE = (255, 255, 255)
@@ -18,8 +23,8 @@ PLAYER_COLORS = [
 ]
 
 # Box dimensions
-BIG_BOX_WIDTH = 600
-BIG_BOX_HEIGHT = 400
+BIG_BOX_WIDTH = 1920
+BIG_BOX_HEIGHT = 1080
 PLAYER_WIDTH = 50
 PLAYER_HEIGHT = 50
 PLAYER_SPEED = 5
@@ -30,6 +35,7 @@ class Game:
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("Tradership")
+
         self.clock = pygame.time.Clock()
         self.running = True
         self.picked_map = {}
@@ -43,6 +49,8 @@ class Game:
             self.big_box_y,
             self.big_box_y + BIG_BOX_HEIGHT - PLAYER_HEIGHT
         )
+
+        # self.spaceship = Spaceship()
 
         # Define controls for each player
         self.player_controls = [
@@ -84,10 +92,29 @@ class Game:
                 )
                 self.pickables.append(pickable)
 
+        # Initialize enemy list
+        self.enemies = []
+
     def handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+
+    def find_closest_player(self, enemy_x, enemy_y):
+        """Find the closest player to the given enemy coordinates."""
+        closest_player = None
+        min_distance = float('inf')
+
+        for player in self.players:
+            dx = player.x - enemy_x
+            dy = player.y - enemy_y
+            distance = (dx ** 2 + dy ** 2) ** 0.5  # Euclidean distance
+
+            if distance < min_distance:
+                min_distance = distance
+                closest_player = player
+
+        return closest_player
 
     def update(self):
         keys = pygame.key.get_pressed()
@@ -117,6 +144,27 @@ class Game:
                     pickable.picked = False
                     player.held_item = None
                 player.action = None  # Reset action after handling
+
+        # Randomly spawn enemies
+        if random.randint(1, 100) <= 5:  # 5% chance of spawning an enemy per frame
+            enemy_type = random.choice(list(EnemyType))
+            x = random.randint(self.big_box_x, self.big_box_x + BIG_BOX_WIDTH - 40)
+            y = random.randint(self.big_box_y, self.big_box_y + BIG_BOX_HEIGHT - 40)
+
+            # Assign closest player as the target for PLAYER_ATTACKING type
+            target = None
+            if enemy_type == EnemyType.PLAYER_ATTACKING:
+                target = self.find_closest_player(x, y)
+
+            new_enemy = Enemy(x=x, y=y, speed=2, enemy_type=enemy_type, target=target)
+            self.enemies.append(new_enemy)
+
+    # Update enemy behavior
+        for enemy in self.enemies:
+            if enemy.type == EnemyType.PLAYER_ATTACKING:
+                # Recalculate the closest player for each enemy
+                enemy.target = self.find_closest_player(enemy.x, enemy.y)
+            enemy.move_towards_target()
 
     def draw(self):
         # Clear screen
@@ -148,6 +196,10 @@ class Game:
             else:
                 # Draw the pickable at its position
                 pickable.draw(self.screen)
+
+        # Draw each enemy
+        for enemy in self.enemies:
+            enemy.draw(self.screen)
 
         # Update the display
         pygame.display.flip()
