@@ -1,7 +1,7 @@
 import pygame
 import sys
 from player import Player
-from spaceship import Spaceship
+#from spaceship import Spaceship
 
 GAME_NAME = 'EventHorizon24'
 
