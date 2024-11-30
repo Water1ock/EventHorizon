@@ -1,10 +1,13 @@
 import pygame
 import sys
 from player import Player
+from spaceship import Spaceship
+
+GAME_NAME = 'EventHorizon24'
 
 # Screen dimensions
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 1920
+SCREEN_HEIGHT = 1080
 
 # Colors
 WHITE = (255, 255, 255)
@@ -17,8 +20,8 @@ PLAYER_COLORS = [
 ]
 
 # Box dimensions
-BIG_BOX_WIDTH = 600
-BIG_BOX_HEIGHT = 400
+BIG_BOX_WIDTH = 1920
+BIG_BOX_HEIGHT = 1080
 PLAYER_WIDTH = 50
 PLAYER_HEIGHT = 50
 PLAYER_SPEED = 5
@@ -29,6 +32,7 @@ class Game:
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("Tradership")
+
         self.clock = pygame.time.Clock()
         self.running = True
 
@@ -41,6 +45,8 @@ class Game:
             self.big_box_y,
             self.big_box_y + BIG_BOX_HEIGHT - PLAYER_HEIGHT
         )
+
+        # self.spaceship = Spaceship()
 
         # Define controls for each player
         self.player_controls = [
