@@ -1,8 +1,6 @@
 import pygame
 import sys
-
-# Initialize Pygame
-pygame.init()
+from player import Player
 
 # Screen dimensions
 SCREEN_WIDTH = 800
@@ -18,58 +16,73 @@ BIG_BOX_WIDTH = 600
 BIG_BOX_HEIGHT = 400
 PLAYER_WIDTH = 50
 PLAYER_HEIGHT = 50
-
-# Movement speed
 PLAYER_SPEED = 5
 
-# Initialize the screen
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Big Box with Movable Player")
 
-# Big box position
-big_box_x = (SCREEN_WIDTH - BIG_BOX_WIDTH) // 2
-big_box_y = (SCREEN_HEIGHT - BIG_BOX_HEIGHT) // 2
+class Game:
+    def __init__(self):
+        # Initialize Pygame
+        pygame.init()
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        pygame.display.set_caption("Big Box with Movable Player")
+        self.clock = pygame.time.Clock()
+        self.running = True
 
-# Player initial position
-player_x = big_box_x + (BIG_BOX_WIDTH - PLAYER_WIDTH) // 2
-player_y = big_box_y + BIG_BOX_HEIGHT - PLAYER_HEIGHT - 10  # Slight offset from bottom
+        # Initialize the big box
+        self.big_box_x = (SCREEN_WIDTH - BIG_BOX_WIDTH) // 2
+        self.big_box_y = (SCREEN_HEIGHT - BIG_BOX_HEIGHT) // 2
 
-# Main loop flag
-running = True
+        # Player initialization
+        player_initial_x = self.big_box_x + (BIG_BOX_WIDTH - PLAYER_WIDTH) // 2
+        player_initial_y = self.big_box_y + BIG_BOX_HEIGHT - PLAYER_HEIGHT - 10
+        self.player = Player(
+            x=player_initial_x,
+            y=player_initial_y,
+            width=PLAYER_WIDTH,
+            height=PLAYER_HEIGHT,
+            speed=PLAYER_SPEED,
+            bounds=(self.big_box_x, self.big_box_x + BIG_BOX_WIDTH - PLAYER_WIDTH),
+        )
 
-# Clock to control the frame rate
-clock = pygame.time.Clock()
+    def handle_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
 
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+    def update(self):
+        keys = pygame.key.get_pressed()
+        self.player.move(keys)
 
-    # Get key presses
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
-        player_x -= PLAYER_SPEED
-    if keys[pygame.K_RIGHT]:
-        player_x += PLAYER_SPEED
+    def draw(self):
+        # Clear screen
+        self.screen.fill(WHITE)
 
-    # Constrain player movement within the big box
-    player_x = max(big_box_x, min(player_x, big_box_x + BIG_BOX_WIDTH - PLAYER_WIDTH))
+        # Draw the big box
+        pygame.draw.rect(
+            self.screen,
+            BLACK,
+            (self.big_box_x, self.big_box_y, BIG_BOX_WIDTH, BIG_BOX_HEIGHT),
+            2,
+        )
 
-    # Clear screen
-    screen.fill(WHITE)
+        # Draw the player
+        self.player.draw(self.screen, BLUE)
 
-    # Draw the big box
-    pygame.draw.rect(screen, BLACK, (big_box_x, big_box_y, BIG_BOX_WIDTH, BIG_BOX_HEIGHT), 2)
+        # Update the display
+        pygame.display.flip()
 
-    # Draw the player
-    pygame.draw.rect(screen, BLUE, (player_x, player_y, PLAYER_WIDTH, PLAYER_HEIGHT))
+    def run(self):
+        while self.running:
+            self.handle_events()
+            self.update()
+            self.draw()
+            self.clock.tick(60)
 
-    # Update the display
-    pygame.display.flip()
+        # Quit Pygame
+        pygame.quit()
+        sys.exit()
 
-    # Cap the frame rate
-    clock.tick(60)
 
-# Quit Pygame
-pygame.quit()
-sys.exit()
+if __name__ == "__main__":
+    game = Game()
+    game.run()
