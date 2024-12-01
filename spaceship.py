@@ -5,7 +5,7 @@ from roomTile import RoomTile
 from barrier import Barrier
 from door import Door
 from ladder import Ladder
-from constants import ROOM_TILE_WIDTH, ROOM_TILE_HEIGHT, WALL_FLOOR_DEPTH, WALL_FLOOR_COLOUR, SPACESHIP_PADDING_LEFT, SPACESHIP_PADDING_TOP
+from constants import ROOM_TILE_WIDTH, ROOM_TILE_HEIGHT, WALL_FLOOR_DEPTH, WALL_FLOOR_COLOUR, SPACESHIP_PADDING_LEFT, SPACESHIP_PADDING_TOP, LADDER_WIDTH
 
 class RoomType(enum.Enum):
     O2 = 'Oxygen'
@@ -86,6 +86,43 @@ class Spaceship:
             ],
         ]
 
+        # Loop through the level grid and create tiles
+        self.barriers = []
+        self.nonBarriers = []
+        for row in range(len(self.room_tile_grid)):
+            for col in range(len(self.room_tile_grid[row])):
+                if self.room_tile_grid[row][col]:
+                    tile = self.room_tile_grid[row][col]  # If there's a platform
+                    x = col * ROOM_TILE_WIDTH + SPACESHIP_PADDING_LEFT
+                    y = row * ROOM_TILE_HEIGHT + SPACESHIP_PADDING_TOP
+                    if tile.floor:
+                        self.barriers.append(Barrier(WALL_FLOOR_COLOUR, x, y + ROOM_TILE_HEIGHT - (WALL_FLOOR_DEPTH // 2), ROOM_TILE_WIDTH, WALL_FLOOR_DEPTH))
+                
+                    # Draw the ceiling if it exists
+                    if tile.ceiling:
+                        self.barriers.append(Barrier(WALL_FLOOR_COLOUR, x, y - (WALL_FLOOR_DEPTH // 2), ROOM_TILE_WIDTH, WALL_FLOOR_DEPTH))
+
+                    # Draw the left wall
+                    if tile.wall_left == WallType.WALL:
+                        self.barriers.append(Barrier(WALL_FLOOR_COLOUR, x - (WALL_FLOOR_DEPTH // 2), y, WALL_FLOOR_DEPTH, ROOM_TILE_HEIGHT))
+                    elif tile.wall_left == WallType.DOOR:
+                        self.nonBarriers.append(Door(WALL_FLOOR_COLOUR, x - (WALL_FLOOR_DEPTH // 2), y, WALL_FLOOR_DEPTH, ROOM_TILE_HEIGHT))
+
+                    # Draw the right wall
+                    if tile.wall_right == WallType.WALL:
+                        self.barriers.append(Barrier(WALL_FLOOR_COLOUR, x + ROOM_TILE_WIDTH - (WALL_FLOOR_DEPTH // 2), y, WALL_FLOOR_DEPTH, ROOM_TILE_HEIGHT))
+                    elif tile.wall_right == WallType.DOOR:
+                        self.nonBarriers.append(Door(WALL_FLOOR_COLOUR, x + ROOM_TILE_WIDTH - (WALL_FLOOR_DEPTH // 2), y, WALL_FLOOR_DEPTH, ROOM_TILE_HEIGHT))
+
+                    # # Draw ladders if present
+                    if tile.has_ladder:
+                        self.nonBarriers.append(Ladder(x + ROOM_TILE_WIDTH // 2 - (LADDER_WIDTH // 2), y, LADDER_WIDTH, ROOM_TILE_HEIGHT))
+
+                    # Draw any object in the tile (placeholder logic for visual representation)
+                    # if tile.object:
+                    #     pygame.draw.circle(screen, (0, 255, 0), (x + ROOM_TILE_WIDTH // 2, y + ROOM_TILE_HEIGHT // 2), 10)
+
+    # find where the objects are
     def update_object_coordinates(self, spaceship_padding_left, spaceship_padding_top):
         for row in range(len(self.room_tile_grid)):
             for col in range(len(self.room_tile_grid[row])):
@@ -130,41 +167,6 @@ class Spaceship:
                         closest_object = tile.object
         return closest_object
 
-        # Loop through the level grid and create tiles
-        self.barriers = []
-        for row in range(len(self.room_tile_grid)):
-            for col in range(len(self.room_tile_grid[row])):
-                if self.room_tile_grid[row][col]:
-                    tile = self.room_tile_grid[row][col]  # If there's a platform
-                    x = col * ROOM_TILE_WIDTH + SPACESHIP_PADDING_LEFT
-                    y = row * ROOM_TILE_HEIGHT + SPACESHIP_PADDING_TOP
-                    if tile.floor:
-                        self.barriers.append(Barrier(WALL_FLOOR_COLOUR, x, y + ROOM_TILE_HEIGHT - (WALL_FLOOR_DEPTH // 2), ROOM_TILE_WIDTH, WALL_FLOOR_DEPTH))
-                
-                    # Draw the ceiling if it exists
-                    if tile.ceiling:
-                        self.barriers.append(Barrier(WALL_FLOOR_COLOUR, x, y - (WALL_FLOOR_DEPTH // 2), ROOM_TILE_WIDTH, WALL_FLOOR_DEPTH))
-
-                    # Draw the left wall
-                    if tile.wall_left == WallType.WALL:
-                        self.barriers.append(Barrier(WALL_FLOOR_COLOUR, x - (WALL_FLOOR_DEPTH // 2), y, WALL_FLOOR_DEPTH, ROOM_TILE_HEIGHT))
-                    elif tile.wall_left == WallType.DOOR:
-                        self.barriers.append(Door(WALL_FLOOR_COLOUR, x - (WALL_FLOOR_DEPTH // 2), y, WALL_FLOOR_DEPTH, ROOM_TILE_HEIGHT))
-
-                    # Draw the right wall
-                    if tile.wall_right == WallType.WALL:
-                        self.barriers.append(Barrier(WALL_FLOOR_COLOUR, x + ROOM_TILE_WIDTH - (WALL_FLOOR_DEPTH // 2), y, WALL_FLOOR_DEPTH, ROOM_TILE_HEIGHT))
-                    elif tile.wall_right == WallType.DOOR:
-                        self.barriers.append(Door(WALL_FLOOR_COLOUR, x + ROOM_TILE_WIDTH - (WALL_FLOOR_DEPTH // 2), y, WALL_FLOOR_DEPTH, ROOM_TILE_HEIGHT))
-
-                    # # Draw ladders if present
-                    if tile.has_ladder:
-                        self.barriers.append(Ladder(x + ROOM_TILE_WIDTH // 2 - 2, y, 30, ROOM_TILE_HEIGHT))
-
-                    # Draw any object in the tile (placeholder logic for visual representation)
-                    # if tile.object:
-                    #     pygame.draw.circle(screen, (0, 255, 0), (x + ROOM_TILE_WIDTH // 2, y + ROOM_TILE_HEIGHT // 2), 10)
-
     def draw(self, screen):
         
         ### FOR DEBUGGING UNCOMMENT THIS TO SHOW FULL GRID ###
@@ -179,4 +181,7 @@ class Spaceship:
          
         for barrier in self.barriers:
             barrier.draw(screen)
+        
+        for nonBarrier in self.nonBarriers:
+            nonBarrier.draw(screen)
 

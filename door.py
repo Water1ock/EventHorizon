@@ -11,4 +11,4 @@ class Door:
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.colour, (self.x, self.y, self.width, self.height))
-        pygame.draw.rect(screen, DOOR_COLOUR, (self.x, self.y + (self.height // 2), self.width, self.height // 2))
+        pygame.draw.rect(screen, DOOR_COLOUR, (self.x, self.y + (self.height // 2), self.width, (self.height // 2) - 5))

@@ -56,10 +56,10 @@ class Game:
         # Initialize players at different positions
         self.players = []
         start_positions = [
-            (self.big_box_x + 50, self.big_box_y + 50),
-            (self.big_box_x + 150, self.big_box_y + 50),
-            (self.big_box_x + 250, self.big_box_y + 50),
-            (self.big_box_x + 350, self.big_box_y + 50)
+            (self.big_box_x + 700, self.big_box_y + 550),
+            (self.big_box_x + 775, self.big_box_y + 550),
+            (self.big_box_x + 850, self.big_box_y + 550),
+            (self.big_box_x + 925, self.big_box_y + 550)
         ]
 
         for i in range(4):
@@ -114,10 +114,17 @@ class Game:
         pygame.draw.rect(self.screen, color, (x, y, 100*value/100, 20))
 
     def update(self):
+        
         keys = pygame.key.get_pressed()
+        
+        # Combine barriers and players for collision detection
+        collision_barriers = self.spaceShip.barriers
+        
         for player in self.players:
-            player.move(keys)
-            player.apply_gravity()
+            # Pass other players and enemies for collision detection
+            player.apply_gravity(self.spaceShip.barriers)
+            other_players = [p for p in self.players if p != player]
+            player.move(keys, collision_barriers)
         
         self.handle_player_actions()
 
@@ -172,7 +179,7 @@ class Game:
                 player.action = None  # Reset action after handling
 
         # Randomly spawn enemies
-        if random.randint(1, 100) <= 5:  # 5% chance of spawning an enemy per frame
+        if random.randint(1, 100) <= 1:  # 1% chance of spawning an enemy per frame
             enemy_type = random.choice(list(EnemyType))
             x = random.randint(self.big_box_x, self.big_box_x + SCREEN_WIDTH - 40)
             y = random.randint(self.big_box_y, self.big_box_y + SCREEN_HEIGHT - 40)
