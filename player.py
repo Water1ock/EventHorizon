@@ -45,3 +45,18 @@ class Player:
 
     def draw(self, screen, color):
         pygame.draw.rect(screen, color, (self.x, self.y, self.width, self.height))
+
+    def draw_stats(self, screen, position):
+        font = pygame.font.Font(None, 36)
+
+        # Health Bar
+        pygame.draw.rect(screen, (255, 0, 0), (position[0], position[1], 200, 20))  # Red background for health
+        pygame.draw.rect(screen, (0, 255, 0), (position[0], position[1], self.health * 2, 20))  # Green foreground for health
+
+        # Oxygen Bar
+        pygame.draw.rect(screen, (0, 0, 255), (position[0], position[1] + 30, 200, 20))  # Blue background for oxygen
+        pygame.draw.rect(screen, (173, 216, 230), (position[0], position[1] + 30, self.oxy_level * 2, 20))  # Cyan foreground for oxygen
+
+        # Display Player Label
+        label = font.render(f"Player", True, (0, 0, 0))
+        screen.blit(label, (position[0], position[1] - 30))

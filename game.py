@@ -88,7 +88,6 @@ class Game:
                 self.running = False
 
     def find_closest_player(self, enemy_x, enemy_y):
-        """Find the closest player to the given enemy coordinates."""
         closest_player = None
         min_distance = float('inf')
 
@@ -146,6 +145,22 @@ class Game:
         # Draw each player with a unique color
         for i, player in enumerate(self.players):
             player.draw(self.screen, PLAYER_COLORS[i])
+
+        # Draw player health bars (top-left, top-right, bottom-left, bottom-right)
+        for i, player in enumerate(self.players):
+            # Calculate positions for player health bars
+            if i == 0:
+                # Top-left
+                player.draw_stats(self.screen, (10, 10))
+            elif i == 1:
+                # Top-right
+                player.draw_stats(self.screen, (SCREEN_WIDTH - 210, 10))
+            elif i == 2:
+                # Bottom-left
+                player.draw_stats(self.screen, (10, SCREEN_HEIGHT - 60))
+            elif i == 3:
+                # Bottom-right
+                player.draw_stats(self.screen, (SCREEN_WIDTH - 210, SCREEN_HEIGHT - 60))
 
         # Draw each enemy
         for enemy in self.enemies:
