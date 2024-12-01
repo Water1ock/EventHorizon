@@ -4,6 +4,7 @@ from object import Object
 from roomTile import RoomTile
 from barrier import Barrier
 from door import Door
+from ladder import Ladder
 from constants import ROOM_TILE_WIDTH, ROOM_TILE_HEIGHT, WALL_FLOOR_DEPTH, WALL_FLOOR_COLOUR, SPACESHIP_PADDING_LEFT, SPACESHIP_PADDING_TOP
 
 class RoomType(enum.Enum):
@@ -113,10 +114,10 @@ class Spaceship:
                         self.barriers.append(Door(WALL_FLOOR_COLOUR, x + ROOM_TILE_WIDTH - (WALL_FLOOR_DEPTH // 2), y, WALL_FLOOR_DEPTH, ROOM_TILE_HEIGHT))
 
                     # # Draw ladders if present
-                    # if tile.has_ladder:
-                    #     pygame.draw.rect(screen, (200, 200, 0), (x + ROOM_TILE_WIDTH // 2 - 2, y, 4, ROOM_TILE_HEIGHT))
+                    if tile.has_ladder:
+                        self.barriers.append(Ladder(x + ROOM_TILE_WIDTH // 2 - 2, y, 30, ROOM_TILE_HEIGHT))
 
-                    # # Draw any object in the tile (placeholder logic for visual representation)
+                    # Draw any object in the tile (placeholder logic for visual representation)
                     # if tile.object:
                     #     pygame.draw.circle(screen, (0, 255, 0), (x + ROOM_TILE_WIDTH // 2, y + ROOM_TILE_HEIGHT // 2), 10)
 
