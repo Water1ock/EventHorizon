@@ -87,6 +87,16 @@ class Spaceship:
             ],
         ]
 
+    def get_room_type_at_position(self, x, y, spaceship_padding_top, spaceship_padding_left):
+        col = int((x - spaceship_padding_left) // ROOM_TILE_WIDTH)
+        row = int((y - spaceship_padding_top) // ROOM_TILE_HEIGHT)
+
+        if 0 <= row < len(self.room_tile_grid) and 0 <= col < len(self.room_tile_grid[row]):
+            tile = self.room_tile_grid[row][col]
+            if tile and tile.roomType:
+                return tile.roomType
+            return None
+
     def draw(self, screen, SPACESHIP_PADDING_TOP, SPACESHIP_PADDING_LEFT):
          # Loop through the level grid and draw tiles
          for row in range(len(self.room_tile_grid)):
