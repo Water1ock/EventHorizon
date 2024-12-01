@@ -136,6 +136,30 @@ class Game:
             player.apply_gravity()
         
         self.handle_player_actions()
+
+        player_rooms = {
+            player: self.spaceShip.get_room_type_at_position(
+                player.x,
+                player.y,
+                SPACESHIP_PADDING_TOP,
+                SPACESHIP_PADDING_LEFT
+            ) for player in self.players
+        }
+
+        enemy_rooms = {
+            enemy: self.spaceShip.get_room_type_at_position(
+                enemy.x,
+                enemy.y,
+                SPACESHIP_PADDING_TOP,
+                SPACESHIP_PADDING_LEFT
+            ) for enemy in self.enemies
+        }
+
+        # Apply damage to players if they're in the same room as an enemy
+        for player, player_room in player_rooms.items():
+            for enemy, enemy_room in enemy_rooms.items():
+                if player_room and player_room == enemy_room:
+                    player.decrease_health()
     
     def draw_text(self, text, x, y, font_size=15):
         font = pygame.font.Font(pygame.font.get_default_font(), font_size)
