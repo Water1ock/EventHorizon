@@ -166,6 +166,7 @@ class Spaceship:
                     #     pygame.draw.circle(screen, (0, 255, 0), (x + ROOM_TILE_WIDTH // 2, y + ROOM_TILE_HEIGHT // 2), 10)
 
     def draw(self, screen):
+        pass
         
         ### FOR DEBUGGING UNCOMMENT THIS TO SHOW FULL GRID ###
         # for row in range(len(self.room_tile_grid)):
@@ -177,6 +178,6 @@ class Spaceship:
         #             pygame.draw.rect(screen, (0, 255, 0), (x, y, ROOM_TILE_WIDTH, ROOM_TILE_HEIGHT), 3)
         ### FOR DEBUGGING UNCOMMENT THIS TO SHOW FULL GRID ###
          
-        for barrier in self.barriers:
-            barrier.draw(screen)
+        # for barrier in self.barriers:
+        #     barrier.draw(screen)
 

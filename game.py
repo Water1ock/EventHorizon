@@ -116,8 +116,9 @@ class Game:
     def update(self):
         keys = pygame.key.get_pressed()
         for player in self.players:
-            player.move(keys)
+            player.move(keys,self.screen)
             player.apply_gravity()
+            self.enemies = player.collision_with_enemy(self.enemies,self.screen)
         
         self.handle_player_actions()
 
@@ -156,7 +157,7 @@ class Game:
                 # Try to pick up an item
                 for pickable in self.pickables:
                     if player.rect.colliderect(pickable.rect) and not pickable.picked:
-                        player.held_item = pickable
+                        # player.held_item = pickable
                         self.picked_map[player] = pickable
                         pickable.picked = True
                         break
@@ -172,7 +173,7 @@ class Game:
                 player.action = None  # Reset action after handling
 
         # Randomly spawn enemies
-        if random.randint(1, 100) <= 5:  # 5% chance of spawning an enemy per frame
+        if random.randint(1, 200) <= 5:  # 5% chance of spawning an enemy per frame
             enemy_type = random.choice(list(EnemyType))
             x = random.randint(self.big_box_x, self.big_box_x + SCREEN_WIDTH - 40)
             y = random.randint(self.big_box_y, self.big_box_y + SCREEN_HEIGHT - 40)
@@ -248,7 +249,7 @@ class Game:
                 # Bottom-right
                 player.decrease_oxy_level()
                 player.draw_stats(self.screen, (SCREEN_WIDTH - 210, SCREEN_HEIGHT - 70), player_name='Player 4', color=(0, 0, 255))
-
+        
         # Draw each enemy
         for enemy in self.enemies:
             enemy.draw(self.screen)
