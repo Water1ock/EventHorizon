@@ -34,6 +34,7 @@ class Game:
         self.distance = 0
         self.fuel = 100
         self.damage = 0
+        self.bg=pygame.image.load(r'/Users/shashanks/Documents/Uni/GameJam/EventHorizon/Sprites/spaceship.png')
 
         # Initialize the big box boundaries
         self.big_box_x = 0
@@ -154,8 +155,9 @@ class Game:
     
     def draw_text(self, text, x, y, font_size=15):
         font = pygame.font.Font(pygame.font.get_default_font(), font_size)
-        text = font.render(text, True, BLACK)
+        text = font.render(text, True, WHITE)
         self.screen.blit(text, (x, y))
+        
 
     def handle_player_actions(self):
         for player in self.players:
@@ -206,6 +208,7 @@ class Game:
     def draw(self):
         # Clear screen
         self.screen.fill(WHITE)
+        self.screen.blit(self.bg, (0, 0))
 
         # Draw the big box
         pygame.draw.rect(
