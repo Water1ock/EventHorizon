@@ -11,6 +11,7 @@ class Player:
         self.bounds = bounds  # (x_min, x_max)
         self.gravity = 0.5
         self.health = 100
+        self.oxy_level = 100
         self.direction = enum.Enum('Direction', 'left right up down')
         self.current_direction = self.direction.right
         self.controls = controls
@@ -53,5 +54,32 @@ class Player:
         if self.y > self.bounds[3] - self.height:
             self.y = self.bounds[3] - self.height
 
+    def decrease_oxy_level(self):
+        self.oxy_level -= 0.5
+
     def draw(self, screen, color):
         self.rect = pygame.draw.rect(screen, color, (self.x, self.y, self.width, self.height))
+
+    def draw_stats(self, screen, position, player_name, color):
+        font = pygame.font.Font(None, 36)
+
+        # Draw the colored square representing the player
+        square_size = 20
+        square_x, square_y = position[0], position[1] - 40
+        pygame.draw.rect(screen, color, (square_x, square_y, square_size, square_size))
+
+        # Display the player's name next to the colored square
+        name_label = font.render(player_name, True, (0, 0, 0))
+        screen.blit(name_label, (square_x + square_size + 10, square_y))
+
+        # Health Bar
+        bar_width = 200
+        bar_height = 20
+        health_bar_x, health_bar_y = position[0], position[1]
+
+        # Draw background of the health bar
+        pygame.draw.rect(screen, (139, 69, 19), (health_bar_x, health_bar_y, bar_width, bar_height))  # Dark yellow
+
+        # Draw foreground of the health bar
+        health_width = (self.health / 100) * bar_width  # Adjust width based on health percentage
+        pygame.draw.rect(screen, (255, 0, 0), (health_bar_x, health_bar_y, health_width, bar_height))  # Red
