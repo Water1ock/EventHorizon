@@ -2,18 +2,10 @@ import pygame
 import sys
 import random
 from player import Player
-from spaceship import Spaceship, ROOM_TILE_HEIGHT, ROOM_TILE_WIDTH
+from spaceship import Spaceship
 from pickables import PickItems
 from enemy import Enemy, EnemyType
-
-GAME_NAME = 'EventHorizon24'
-
-# Screen dimensions
-SCREEN_WIDTH = 1920
-SCREEN_HEIGHT = 1080
-
-SPACESHIP_PADDING_TOP = (SCREEN_HEIGHT - (3*ROOM_TILE_HEIGHT)) // 2 
-SPACESHIP_PADDING_LEFT = (SCREEN_WIDTH - (13*ROOM_TILE_WIDTH)) // 2 
+from constants import ROOM_TILE_HEIGHT, ROOM_TILE_WIDTH, GAME_NAME, SCREEN_WIDTH, SCREEN_HEIGHT, SPACESHIP_PADDING_TOP, SPACESHIP_PADDING_LEFT, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED
 
 # Colors
 WHITE = (255, 255, 255)
@@ -24,13 +16,6 @@ PLAYER_COLORS = [
     (0, 0, 255),    # Blue
     (255, 255, 0)   # Yellow
 ]
-
-# Box dimensions
-BIG_BOX_WIDTH = SCREEN_WIDTH
-BIG_BOX_HEIGHT = SCREEN_HEIGHT
-PLAYER_WIDTH = 50
-PLAYER_HEIGHT = 50
-PLAYER_SPEED = 5
 
 class Game:
     def __init__(self):
@@ -51,16 +36,14 @@ class Game:
         self.damage = 0
 
         # Initialize the big box boundaries
-        self.big_box_x = (SCREEN_WIDTH - BIG_BOX_WIDTH) // 2
-        self.big_box_y = (SCREEN_HEIGHT - BIG_BOX_HEIGHT) // 2
+        self.big_box_x = 0
+        self.big_box_y = 0
         self.bounds = (
             self.big_box_x,
-            self.big_box_x + BIG_BOX_WIDTH - PLAYER_WIDTH,
+            self.big_box_x + SCREEN_WIDTH - PLAYER_WIDTH,
             self.big_box_y,
-            self.big_box_y + BIG_BOX_HEIGHT - PLAYER_HEIGHT
+            self.big_box_y + SCREEN_HEIGHT - PLAYER_HEIGHT
         )
-
-        # self.spaceship = Spaceship()
 
         # Define controls for each player
         self.player_controls = [
@@ -191,8 +174,8 @@ class Game:
         # Randomly spawn enemies
         if random.randint(1, 100) <= 5:  # 5% chance of spawning an enemy per frame
             enemy_type = random.choice(list(EnemyType))
-            x = random.randint(self.big_box_x, self.big_box_x + BIG_BOX_WIDTH - 40)
-            y = random.randint(self.big_box_y, self.big_box_y + BIG_BOX_HEIGHT - 40)
+            x = random.randint(self.big_box_x, self.big_box_x + SCREEN_WIDTH - 40)
+            y = random.randint(self.big_box_y, self.big_box_y + SCREEN_HEIGHT - 40)
 
             # Assign closest player as the target for PLAYER_ATTACKING type
             target = None
@@ -221,11 +204,11 @@ class Game:
         pygame.draw.rect(
             self.screen,
             BLACK,
-            (self.big_box_x, self.big_box_y, BIG_BOX_WIDTH, BIG_BOX_HEIGHT),
+            (self.big_box_x, self.big_box_y, SCREEN_WIDTH, SCREEN_HEIGHT),
             2,
         )
 
-        self.spaceShip.draw(self.screen, SPACESHIP_PADDING_LEFT, SPACESHIP_PADDING_TOP)
+        self.spaceShip.draw(self.screen)
 
         # Draw each player with a unique color
         for i, player in enumerate(self.players):
