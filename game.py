@@ -39,6 +39,9 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
         self.picked_map = {}
+        self.distance = 0
+        self.fuel = 100
+        self.damage = 0
 
         # Initialize the big box boundaries
         self.big_box_x = (SCREEN_WIDTH - BIG_BOX_WIDTH) // 2
@@ -114,6 +117,11 @@ class Game:
                 closest_player = player
 
         return closest_player
+    
+    def healthbar(self, value,color,x,y,text):
+        self.draw_text(f'{text}: {round(value,1)}', x, y-20)
+        pygame.draw.rect(self.screen, (199, 144, 0 ), (x, y, 100, 20))
+        pygame.draw.rect(self.screen, color, (x, y, 100*value/100, 20))
 
     def update(self):
         keys = pygame.key.get_pressed()
@@ -122,6 +130,11 @@ class Game:
             player.apply_gravity()
         
         self.handle_player_actions()
+    
+    def draw_text(self, text, x, y, font_size=15):
+        font = pygame.font.Font(pygame.font.get_default_font(), font_size)
+        text = font.render(text, True, BLACK)
+        self.screen.blit(text, (x, y))
 
     def handle_player_actions(self):
         for player in self.players:
@@ -202,23 +215,26 @@ class Game:
             if i == 0:
                 # Top-left
                 player.decrease_oxy_level()
-                player.draw_stats(self.screen, (10, 10), player_name='Player 1', color=(255, 255, 0))
+                player.draw_stats(self.screen, (20, 70), player_name='Player 1', color=(255, 255, 0))
             elif i == 1:
                 # Top-right
                 player.decrease_oxy_level()
-                player.draw_stats(self.screen, (SCREEN_WIDTH - 210, 10), player_name='Player 2', color=(255, 0, 0))
+                player.draw_stats(self.screen, (SCREEN_WIDTH - 210, 70), player_name='Player 2', color=(255, 0, 0))
             elif i == 2:
                 # Bottom-left
                 player.decrease_oxy_level()
-                player.draw_stats(self.screen, (10, SCREEN_HEIGHT - 60), player_name='Player 3', color=(0, 255, 0))
+                player.draw_stats(self.screen, (10, SCREEN_HEIGHT - 70), player_name='Player 3', color=(0, 255, 0))
             elif i == 3:
                 # Bottom-right
                 player.decrease_oxy_level()
-                player.draw_stats(self.screen, (SCREEN_WIDTH - 210, SCREEN_HEIGHT - 60), player_name='Player 4', color=(0, 0, 255))
+                player.draw_stats(self.screen, (SCREEN_WIDTH - 210, SCREEN_HEIGHT - 70), player_name='Player 4', color=(0, 0, 255))
 
         # Draw each enemy
         for enemy in self.enemies:
             enemy.draw(self.screen)
+        self.healthbar(self.fuel, (0,255,0), SCREEN_WIDTH//2-270, 50, 'Fuel')
+        self.healthbar(self.distance, (0,255,0), SCREEN_WIDTH//2-20, 50, 'Distance')
+        self.healthbar(self.damage, (255,0,0), SCREEN_WIDTH//2+250-20, 50, 'Damage')
 
         # Update the display
         pygame.display.flip()
@@ -229,6 +245,8 @@ class Game:
             self.update()
             self.draw()
             self.clock.tick(60)
+            
+            self.fuel -= 0.001
 
         # Quit Pygame
         pygame.quit()
