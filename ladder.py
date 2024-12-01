@@ -9,4 +9,6 @@ class Ladder:
         self.height = height
 
     def draw(self, screen):
-        pygame.draw.rect(screen, LADDER_COLOUR, (self.x, self.y, self.width, self.height))
+        # pygame.draw.rect(screen, LADDER_COLOUR, (self.x, self.y, self.width, self.height))
+
+        pass

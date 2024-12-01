@@ -149,7 +149,7 @@ class Player:
         pygame.draw.rect(screen, color, (square_x, square_y, square_size, square_size))
 
         # Display the player's name next to the colored square
-        name_label = font.render(player_name, True, (0, 0, 0))
+        name_label = font.render(player_name, True, (255, 255, 255))
         screen.blit(name_label, (square_x, square_y-20))
 
         # Health Bar
