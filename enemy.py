@@ -5,7 +5,7 @@ import random
 
 class EnemyType(enum.Enum):
     PLAYER_ATTACKING = "Player Attacking"
-    #OBJECT_ATTACKING = "Object Attacking" (Will be added later)
+    OBJECT_ATTACKING = "Object Attacking"
 
 
 class Enemy:

@@ -43,6 +43,7 @@ class Game:
         self.running = True
 
         self.spaceShip = Spaceship()
+        self.spaceShip.update_object_coordinates(SPACESHIP_PADDING_LEFT, SPACESHIP_PADDING_TOP)
 
         self.picked_map = {}
         self.distance = 0
@@ -197,6 +198,8 @@ class Game:
             target = None
             if enemy_type == EnemyType.PLAYER_ATTACKING:
                 target = self.find_closest_player(x, y)
+            if enemy_type == EnemyType.OBJECT_ATTACKING:
+                target = self.spaceShip.find_closest_object(x, y, SPACESHIP_PADDING_TOP, SPACESHIP_PADDING_LEFT)
 
             new_enemy = Enemy(x=x, y=y, speed=2, enemy_type=enemy_type, target=target)
             self.enemies.append(new_enemy)
@@ -206,6 +209,8 @@ class Game:
             if enemy.type == EnemyType.PLAYER_ATTACKING:
                 # Recalculate the closest player for each enemy
                 enemy.target = self.find_closest_player(enemy.x, enemy.y)
+            if enemy.type == EnemyType.OBJECT_ATTACKING:
+                enemy.target = self.spaceShip.find_closest_object(enemy.x, enemy.y, SPACESHIP_PADDING_TOP, SPACESHIP_PADDING_LEFT)
             enemy.move_towards_target()
 
     def draw(self):
