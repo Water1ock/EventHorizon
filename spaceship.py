@@ -87,6 +87,17 @@ class Spaceship:
             ],
         ]
 
+    def update_object_coordinates(self, spaceship_padding_left, spaceship_padding_top):
+        for row in range(len(self.room_tile_grid)):
+            for col in range(len(self.room_tile_grid[row])):
+                if self.room_tile_grid[row][col]:
+                    tile = self.room_tile_grid[row][col]  # If there's a platform
+                    x = col * ROOM_TILE_WIDTH + spaceship_padding_left
+                    y = row * ROOM_TILE_HEIGHT + spaceship_padding_top
+                    if tile.object:
+                        tile.object.update_x(x + ROOM_TILE_WIDTH // 2)
+                        tile.object.update_y(y + ROOM_TILE_HEIGHT // 2)
+
     def get_room_type_at_position(self, x, y, spaceship_padding_top, spaceship_padding_left):
         col = int((x - spaceship_padding_left) // ROOM_TILE_WIDTH)
         row = int((y - spaceship_padding_top) // ROOM_TILE_HEIGHT)
@@ -96,6 +107,29 @@ class Spaceship:
             if tile and tile.roomType:
                 return tile.roomType
             return None
+
+    def find_closest_object(self, x, y, spaceship_padding_top, spaceship_padding_left):
+        closest_object = None
+        closest_distance = float('inf')
+
+        for row_index, row in enumerate(self.room_tile_grid):
+            for col_index, tile in enumerate(row):
+                if tile and tile.object:  # Check if the tile has an object
+                    # Calculate the center position of the tile
+                    tile_x = col_index * ROOM_TILE_WIDTH + spaceship_padding_left + ROOM_TILE_WIDTH / 2
+                    tile_y = row_index * ROOM_TILE_HEIGHT + spaceship_padding_top + ROOM_TILE_HEIGHT / 2
+
+                    # Compute Euclidean distance
+                    dx = tile_x - x
+                    dy = tile_y - y
+
+                    distance = (dx ** 2 + dy ** 2) ** 0.5
+
+                    # Update Closest Object
+                    if distance < closest_distance:
+                        closest_distance = distance
+                        closest_object = tile.object
+        return closest_object
 
     def draw(self, screen, SPACESHIP_PADDING_TOP, SPACESHIP_PADDING_LEFT):
          # Loop through the level grid and draw tiles
