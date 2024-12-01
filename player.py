@@ -61,7 +61,7 @@ class Player:
         self.rect = pygame.draw.rect(screen, color, (self.x, self.y, self.width, self.height))
 
     def draw_stats(self, screen, position, player_name, color):
-        font = pygame.font.Font(None, 36)
+        font = pygame.font.Font(pygame.font.get_default_font(), 36)
 
         # Draw the colored square representing the player
         square_size = 20
@@ -70,7 +70,7 @@ class Player:
 
         # Display the player's name next to the colored square
         name_label = font.render(player_name, True, (0, 0, 0))
-        screen.blit(name_label, (square_x + square_size + 10, square_y))
+        screen.blit(name_label, (square_x, square_y-20))
 
         # Health Bar
         bar_width = 200
