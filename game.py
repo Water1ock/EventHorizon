@@ -101,7 +101,6 @@ class Game:
                 self.running = False
 
     def find_closest_player(self, enemy_x, enemy_y):
-        """Find the closest player to the given enemy coordinates."""
         closest_player = None
         min_distance = float('inf')
 
@@ -196,6 +195,26 @@ class Game:
             else:
                 # Draw the pickable at its position
                 pickable.draw(self.screen)
+
+        # Draw player health bars (top-left, top-right, bottom-left, bottom-right)
+        for i, player in enumerate(self.players):
+            # Calculate positions for player health bars
+            if i == 0:
+                # Top-left
+                player.decrease_oxy_level()
+                player.draw_stats(self.screen, (10, 10), player_name='Player 1', color=(255, 255, 0))
+            elif i == 1:
+                # Top-right
+                player.decrease_oxy_level()
+                player.draw_stats(self.screen, (SCREEN_WIDTH - 210, 10), player_name='Player 2', color=(255, 0, 0))
+            elif i == 2:
+                # Bottom-left
+                player.decrease_oxy_level()
+                player.draw_stats(self.screen, (10, SCREEN_HEIGHT - 60), player_name='Player 3', color=(0, 255, 0))
+            elif i == 3:
+                # Bottom-right
+                player.decrease_oxy_level()
+                player.draw_stats(self.screen, (SCREEN_WIDTH - 210, SCREEN_HEIGHT - 60), player_name='Player 4', color=(0, 0, 255))
 
         # Draw each enemy
         for enemy in self.enemies:
