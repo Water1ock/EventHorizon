@@ -27,6 +27,7 @@ class Enemy:
         self.width = 40
         self.height = 40
         self.color = (random.randint(100, 255), random.randint(100, 255), random.randint(100, 255))
+        self.health = 30
 
     def move_towards_target(self):
         """
@@ -52,4 +53,4 @@ class Enemy:
         """
         Draw the enemy on the screen.
         """
-        pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
+        self.rect = pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))

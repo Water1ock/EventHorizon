@@ -168,6 +168,7 @@ class Spaceship:
         return closest_object
 
     def draw(self, screen):
+        pass
         
         ### FOR DEBUGGING UNCOMMENT THIS TO SHOW FULL GRID ###
         # for row in range(len(self.room_tile_grid)):
