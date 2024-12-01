@@ -2,9 +2,9 @@ import enum
 import pygame
 from object import Object
 from roomTile import RoomTile
-
-ROOM_TILE_WIDTH = 130
-ROOM_TILE_HEIGHT = 290
+from barrier import Barrier
+from door import Door
+from constants import ROOM_TILE_WIDTH, ROOM_TILE_HEIGHT, WALL_FLOOR_DEPTH, WALL_FLOOR_COLOUR, SPACESHIP_PADDING_LEFT, SPACESHIP_PADDING_TOP
 
 class RoomType(enum.Enum):
     O2 = 'Oxygen'
@@ -16,11 +16,9 @@ class RoomType(enum.Enum):
     WORKSHOP = 'Workshop'
     MEDBAY = 'Medbay'
 
-
 class WallType(enum.Enum):
     WALL = 'Wall'
     DOOR = 'Door'
-
 
 class Spaceship:
     def __init__(self):
@@ -87,40 +85,53 @@ class Spaceship:
             ],
         ]
 
-    def draw(self, screen, SPACESHIP_PADDING_TOP, SPACESHIP_PADDING_LEFT):
-         # Loop through the level grid and draw tiles
-         for row in range(len(self.room_tile_grid)):
-             for col in range(len(self.room_tile_grid[row])):
-                 if self.room_tile_grid[row][col]:
+        # Loop through the level grid and create tiles
+        self.barriers = []
+        for row in range(len(self.room_tile_grid)):
+            for col in range(len(self.room_tile_grid[row])):
+                if self.room_tile_grid[row][col]:
                     tile = self.room_tile_grid[row][col]  # If there's a platform
                     x = col * ROOM_TILE_WIDTH + SPACESHIP_PADDING_LEFT
                     y = row * ROOM_TILE_HEIGHT + SPACESHIP_PADDING_TOP
-                    #  pygame.draw.rect(screen, (1, 1, 1), (x, y, ROOM_TILE_WIDTH, ROOM_TILE_HEIGHT))
-                    #  pygame.draw.rect(screen, (255, 0, 0), (x, y, ROOM_TILE_WIDTH, ROOM_TILE_HEIGHT), 3)  # 3 is the border width
                     if tile.floor:
-                        pygame.draw.rect(screen, (150, 75, 0), (x, y + ROOM_TILE_HEIGHT - 5, ROOM_TILE_WIDTH, 5))
+                        self.barriers.append(Barrier(WALL_FLOOR_COLOUR, x, y + ROOM_TILE_HEIGHT - (WALL_FLOOR_DEPTH // 2), ROOM_TILE_WIDTH, WALL_FLOOR_DEPTH))
                 
                     # Draw the ceiling if it exists
                     if tile.ceiling:
-                        pygame.draw.rect(screen, (100, 100, 100), (x, y, ROOM_TILE_WIDTH, 5))
+                        self.barriers.append(Barrier(WALL_FLOOR_COLOUR, x, y - (WALL_FLOOR_DEPTH // 2), ROOM_TILE_WIDTH, WALL_FLOOR_DEPTH))
 
                     # Draw the left wall
                     if tile.wall_left == WallType.WALL:
-                        pygame.draw.rect(screen, (50, 50, 255), (x, y, 5, ROOM_TILE_HEIGHT))
+                        self.barriers.append(Barrier(WALL_FLOOR_COLOUR, x - (WALL_FLOOR_DEPTH // 2), y, WALL_FLOOR_DEPTH, ROOM_TILE_HEIGHT))
                     elif tile.wall_left == WallType.DOOR:
-                        pygame.draw.rect(screen, (0, 255, 255), (x, y, 5, ROOM_TILE_HEIGHT))
+                        self.barriers.append(Door(WALL_FLOOR_COLOUR, x - (WALL_FLOOR_DEPTH // 2), y, WALL_FLOOR_DEPTH, ROOM_TILE_HEIGHT))
 
                     # Draw the right wall
                     if tile.wall_right == WallType.WALL:
-                        pygame.draw.rect(screen, (50, 50, 255), (x + ROOM_TILE_WIDTH - 5, y, 5, ROOM_TILE_HEIGHT))
+                        self.barriers.append(Barrier(WALL_FLOOR_COLOUR, x + ROOM_TILE_WIDTH - (WALL_FLOOR_DEPTH // 2), y, WALL_FLOOR_DEPTH, ROOM_TILE_HEIGHT))
                     elif tile.wall_right == WallType.DOOR:
-                        pygame.draw.rect(screen, (0, 255, 255), (x + ROOM_TILE_WIDTH - 5, y, 5, ROOM_TILE_HEIGHT))
+                        self.barriers.append(Door(WALL_FLOOR_COLOUR, x + ROOM_TILE_WIDTH - (WALL_FLOOR_DEPTH // 2), y, WALL_FLOOR_DEPTH, ROOM_TILE_HEIGHT))
 
-                    # Draw ladders if present
-                    if tile.has_ladder:
-                        pygame.draw.rect(screen, (200, 200, 0), (x + ROOM_TILE_WIDTH // 2 - 2, y, 4, ROOM_TILE_HEIGHT))
+                    # # Draw ladders if present
+                    # if tile.has_ladder:
+                    #     pygame.draw.rect(screen, (200, 200, 0), (x + ROOM_TILE_WIDTH // 2 - 2, y, 4, ROOM_TILE_HEIGHT))
 
-                    # Draw any object in the tile (placeholder logic for visual representation)
-                    if tile.object:
-                        pygame.draw.circle(screen, (0, 255, 0), (x + ROOM_TILE_WIDTH // 2, y + ROOM_TILE_HEIGHT // 2), 10)
+                    # # Draw any object in the tile (placeholder logic for visual representation)
+                    # if tile.object:
+                    #     pygame.draw.circle(screen, (0, 255, 0), (x + ROOM_TILE_WIDTH // 2, y + ROOM_TILE_HEIGHT // 2), 10)
+
+    def draw(self, screen):
+        
+        ### FOR DEBUGGING UNCOMMENT THIS TO SHOW FULL GRID ###
+        # for row in range(len(self.room_tile_grid)):
+        #     for col in range(len(self.room_tile_grid[row])):
+        #         if self.room_tile_grid[row][col]:
+        #             tile = self.room_tile_grid[row][col]  # If there's a platform
+        #             x = col * ROOM_TILE_WIDTH + SPACESHIP_PADDING_LEFT
+        #             y = row * ROOM_TILE_HEIGHT + SPACESHIP_PADDING_TOP
+        #             pygame.draw.rect(screen, (0, 255, 0), (x, y, ROOM_TILE_WIDTH, ROOM_TILE_HEIGHT), 3)
+        ### FOR DEBUGGING UNCOMMENT THIS TO SHOW FULL GRID ###
+         
+        for barrier in self.barriers:
+            barrier.draw(screen)
 
