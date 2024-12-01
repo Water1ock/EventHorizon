@@ -122,7 +122,7 @@ class Game:
         
         for player in self.players:
             player.apply_gravity(self.spaceShip.barriers)
-            player.move(keys, collision_barriers)
+            player.move(keys,None, collision_barriers)
             self.enemies = player.collision_with_enemy(self.enemies,self.screen)
             other_players = [p for p in self.players if p != player]
         
