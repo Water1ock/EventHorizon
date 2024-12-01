@@ -2,15 +2,18 @@ import pygame
 import sys
 import random
 from player import Player
+from spaceship import Spaceship, ROOM_TILE_HEIGHT, ROOM_TILE_WIDTH
 from pickables import PickItems
 from enemy import Enemy, EnemyType
-#from spaceship import Spaceship
 
 GAME_NAME = 'EventHorizon24'
 
 # Screen dimensions
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
+
+SPACESHIP_PADDING_TOP = (SCREEN_HEIGHT - (3*ROOM_TILE_HEIGHT)) // 2 
+SPACESHIP_PADDING_LEFT = (SCREEN_WIDTH - (13*ROOM_TILE_WIDTH)) // 2 
 
 # Colors
 WHITE = (255, 255, 255)
@@ -23,8 +26,8 @@ PLAYER_COLORS = [
 ]
 
 # Box dimensions
-BIG_BOX_WIDTH = 1920
-BIG_BOX_HEIGHT = 1080
+BIG_BOX_WIDTH = SCREEN_WIDTH
+BIG_BOX_HEIGHT = SCREEN_HEIGHT
 PLAYER_WIDTH = 50
 PLAYER_HEIGHT = 50
 PLAYER_SPEED = 5
@@ -38,6 +41,9 @@ class Game:
 
         self.clock = pygame.time.Clock()
         self.running = True
+
+        self.spaceShip = Spaceship()
+
         self.picked_map = {}
         self.distance = 0
         self.fuel = 100
@@ -189,6 +195,8 @@ class Game:
             (self.big_box_x, self.big_box_y, BIG_BOX_WIDTH, BIG_BOX_HEIGHT),
             2,
         )
+
+        self.spaceShip.draw(self.screen, SPACESHIP_PADDING_LEFT, SPACESHIP_PADDING_TOP)
 
         # Draw each player with a unique color
         for i, player in enumerate(self.players):
