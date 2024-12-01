@@ -28,6 +28,7 @@ class Game:
         self.running = True
 
         self.spaceShip = Spaceship()
+        self.spaceShip.update_object_coordinates(SPACESHIP_PADDING_LEFT, SPACESHIP_PADDING_TOP)
 
         self.picked_map = {}
         self.distance = 0
@@ -119,6 +120,30 @@ class Game:
             player.apply_gravity()
         
         self.handle_player_actions()
+
+        player_rooms = {
+            player: self.spaceShip.get_room_type_at_position(
+                player.x,
+                player.y,
+                SPACESHIP_PADDING_TOP,
+                SPACESHIP_PADDING_LEFT
+            ) for player in self.players
+        }
+
+        enemy_rooms = {
+            enemy: self.spaceShip.get_room_type_at_position(
+                enemy.x,
+                enemy.y,
+                SPACESHIP_PADDING_TOP,
+                SPACESHIP_PADDING_LEFT
+            ) for enemy in self.enemies
+        }
+
+        # Apply damage to players if they're in the same room as an enemy
+        for player, player_room in player_rooms.items():
+            for enemy, enemy_room in enemy_rooms.items():
+                if player_room and player_room == enemy_room:
+                    player.decrease_health()
     
     def draw_text(self, text, x, y, font_size=15):
         font = pygame.font.Font(pygame.font.get_default_font(), font_size)
@@ -156,6 +181,8 @@ class Game:
             target = None
             if enemy_type == EnemyType.PLAYER_ATTACKING:
                 target = self.find_closest_player(x, y)
+            if enemy_type == EnemyType.OBJECT_ATTACKING:
+                target = self.spaceShip.find_closest_object(x, y, SPACESHIP_PADDING_TOP, SPACESHIP_PADDING_LEFT)
 
             new_enemy = Enemy(x=x, y=y, speed=2, enemy_type=enemy_type, target=target)
             self.enemies.append(new_enemy)
@@ -165,6 +192,8 @@ class Game:
             if enemy.type == EnemyType.PLAYER_ATTACKING:
                 # Recalculate the closest player for each enemy
                 enemy.target = self.find_closest_player(enemy.x, enemy.y)
+            if enemy.type == EnemyType.OBJECT_ATTACKING:
+                enemy.target = self.spaceShip.find_closest_object(enemy.x, enemy.y, SPACESHIP_PADDING_TOP, SPACESHIP_PADDING_LEFT)
             enemy.move_towards_target()
 
     def draw(self):

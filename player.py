@@ -57,6 +57,9 @@ class Player:
     def decrease_oxy_level(self):
         self.oxy_level -= 0.5
 
+    def decrease_health(self):
+        self.health -= 1
+
     def draw(self, screen, color):
         self.rect = pygame.draw.rect(screen, color, (self.x, self.y, self.width, self.height))
 
