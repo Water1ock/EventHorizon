@@ -21,6 +21,8 @@ class Player:
         self.action = None  # Can be 'pick' or 'drop'
         self.player_bullets = []
         self.use_flag = False
+        
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
 
     def move(self, keys, screen, barriers):
@@ -96,8 +98,14 @@ class Player:
     def decrease_health(self):
         self.health -= 0.15
 
-    def draw(self, screen, color):
-        self.rect = pygame.draw.rect(screen, color, (self.x, self.y, self.width, self.height))
+    def draw(self, screen, color, sprite):
+        # self.rect = pygame.draw.rect(screen, color, (self.x, self.y, self.width, self.height))
+        if self.direction == 1:
+            self.rect = screen.blit(sprite, (self.x, self.y))
+        elif self.direction == 2:
+            image = pygame.transform.flip(sprite, True, False)
+            self.rect = screen.blit(image, (self.x, self.y))
+
         if len(self.player_bullets)!=0:
             self.draw_bullets(screen)
     

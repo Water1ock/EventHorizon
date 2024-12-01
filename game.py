@@ -6,16 +6,39 @@ from spaceship import Spaceship
 from pickables import PickItems
 from enemy import Enemy, EnemyType
 from constants import ROOM_TILE_HEIGHT, ROOM_TILE_WIDTH, GAME_NAME, SCREEN_WIDTH, SCREEN_HEIGHT, SPACESHIP_PADDING_TOP, SPACESHIP_PADDING_LEFT, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED
+import enum
+import os
 
 # Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-PLAYER_COLORS = [
-    (255, 0, 0),    # Red
-    (0, 255, 0),    # Green
-    (0, 0, 255),    # Blue
-    (255, 255, 0)   # Yellow
+
+PLAYER_COLOURS = [
+    (116,147,216), #blue   
+    (156,216,116), #green
+    (234,234,54), #yellow
+    (223,100,78) #red
 ]
+
+# base_path = os.path.join('sprites', 'players')
+
+# PLAYER_SPRITE = [
+#     pygame.image.load(os.path.join(base_path, 'char-blue-left.png')),
+#     pygame.image.load(os.path.join(base_path, 'char-green-left.png')),
+#     pygame.image.load(os.path.join(base_path, 'char-yellow-left.png')),
+#     pygame.image.load(os.path.join(base_path, 'char-red-left.png'))
+# ]
+
+directory_path = os.path.dirname(__file__)
+
+PLAYER_SPRITES = [
+    pygame.image.load('char-red-left.png'),
+    pygame.image.load('char-red-left.png'),
+    pygame.image.load('char-red-left.png'),
+    pygame.image.load('char-red-left.png')
+]
+
+
 
 class Game:
     def __init__(self):
@@ -225,7 +248,7 @@ class Game:
 
         # Draw each player with a unique color
         for i, player in enumerate(self.players):
-            player.draw(self.screen, PLAYER_COLORS[i])
+            player.draw(self.screen, PLAYER_COLOURS[i], PLAYER_SPRITES[i])
         
         # Draw pickables
         for pickable in self.pickables:
@@ -248,19 +271,19 @@ class Game:
             if i == 0:
                 # Top-left
                 player.decrease_oxy_level()
-                player.draw_stats(self.screen, (20, 70), player_name='Player 1', color=(255, 255, 0))
+                player.draw_stats(self.screen, (20, 70), player_name='Player 1', color=PLAYER_COLOURS[0])
             elif i == 1:
                 # Top-right
                 player.decrease_oxy_level()
-                player.draw_stats(self.screen, (SCREEN_WIDTH - 210, 70), player_name='Player 2', color=(255, 0, 0))
+                player.draw_stats(self.screen, (SCREEN_WIDTH - 210, 70), player_name='Player 2', color=PLAYER_COLOURS[3])
             elif i == 2:
                 # Bottom-left
                 player.decrease_oxy_level()
-                player.draw_stats(self.screen, (10, SCREEN_HEIGHT - 70), player_name='Player 3', color=(0, 255, 0))
+                player.draw_stats(self.screen, (10, SCREEN_HEIGHT - 70), player_name='Player 3', color=PLAYER_COLOURS[1])
             elif i == 3:
                 # Bottom-right
                 player.decrease_oxy_level()
-                player.draw_stats(self.screen, (SCREEN_WIDTH - 210, SCREEN_HEIGHT - 70), player_name='Player 4', color=(0, 0, 255))
+                player.draw_stats(self.screen, (SCREEN_WIDTH - 210, SCREEN_HEIGHT - 70), player_name='Player 4', color=PLAYER_COLOURS[2])
         
         # Draw each enemy
         for enemy in self.enemies:
@@ -277,6 +300,7 @@ class Game:
             self.handle_events()
             self.update()
             self.draw()
+            
             self.clock.tick(60)
             
             self.fuel -= 0.001
