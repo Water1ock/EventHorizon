@@ -56,10 +56,10 @@ class Game:
         # Initialize players at different positions
         self.players = []
         start_positions = [
-            (self.big_box_x + 50, self.big_box_y + 50),
-            (self.big_box_x + 150, self.big_box_y + 50),
-            (self.big_box_x + 250, self.big_box_y + 50),
-            (self.big_box_x + 350, self.big_box_y + 50)
+            (self.big_box_x + 700, self.big_box_y + 550),
+            (self.big_box_x + 775, self.big_box_y + 550),
+            (self.big_box_x + 850, self.big_box_y + 550),
+            (self.big_box_x + 925, self.big_box_y + 550)
         ]
 
         for i in range(4):
@@ -114,11 +114,17 @@ class Game:
         pygame.draw.rect(self.screen, color, (x, y, 100*value/100, 20))
 
     def update(self):
+        
         keys = pygame.key.get_pressed()
+        
+        # Combine barriers and players for collision detection
+        collision_barriers = self.spaceShip.barriers
+        
         for player in self.players:
-            player.move(keys,self.screen)
-            player.apply_gravity()
+            player.apply_gravity(self.spaceShip.barriers)
+            player.move(keys, collision_barriers)
             self.enemies = player.collision_with_enemy(self.enemies,self.screen)
+            other_players = [p for p in self.players if p != player]
         
         self.handle_player_actions()
 

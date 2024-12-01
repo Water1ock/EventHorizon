@@ -10,7 +10,7 @@ class Player:
         self.height = height
         self.speed = speed
         self.bounds = bounds  # (x_min, x_max)
-        self.gravity = 0.5
+        self.gravity = 1
         self.health = 100
         self.oxy_level = 100
         self.direction = enum.Enum('Direction', 'left right up down')
@@ -23,21 +23,25 @@ class Player:
         self.use_flag = False
 
 
-    def move(self, keys, screen):
-        
-        # Handle movement
+    def move(self, keys, screen, barriers):
+        # Store original position to revert if collision occurs
+        original_x, original_y = self.x, self.y        # Handle movement
         if keys[self.controls['left']]:
             self.current_direction = self.direction.left
             self.x -= self.speed
+            self.rect.x = self.x
         if keys[self.controls['right']]:
             self.current_direction = self.direction.right
             self.x += self.speed
+            self.rect.x = self.x
         if keys[self.controls['up']]:
             self.current_direction = self.direction.up
             self.y -= self.speed
+            self.rect.y = self.y
         if keys[self.controls['down']]:
             self.current_direction = self.direction.down
             self.y += self.speed
+            self.rect.y = self.y
         if keys[self.controls['use']] and not self.use_flag:
             self.use_flag=True
         if not keys[self.controls['use']] and self.use_flag:
@@ -46,6 +50,13 @@ class Player:
             # print("move pressed")
        
         
+            
+
+        # Collision checks
+        # Check barriers
+        if self.check_collisions(barriers):
+            # Revert position if collision detected
+            self.x, self.y = original_x, original_y
 
         # Constrain player movement within the bounds
         self.x = max(self.bounds[0], min(self.x, self.bounds[1]))
@@ -61,10 +72,21 @@ class Player:
                     self.action = 'drop'
         else:
             self.pick_pressed = False
-    
 
-    def apply_gravity(self):
-        self.y += self.gravity
+    def apply_gravity(self, barriers):
+        new_y = self.y + self.gravity
+
+        # Check if the player will collide with any barrier at the new position
+        player_rect = pygame.Rect(self.x, new_y, self.width, self.height)  # Player's new rectangle
+        
+        if self.check_collisions(barriers):
+                self.y = self.y - self.gravity
+                return  # Exit the method since the gravity application is complete
+    
+        # If no collision is found, apply gravity (fall down normally)
+        self.y = new_y
+
+        # Check if the player falls out of bounds (for bottom boundary)
         if self.y > self.bounds[3] - self.height:
             self.y = self.bounds[3] - self.height
 
@@ -72,7 +94,7 @@ class Player:
         self.oxy_level -= 0.5
 
     def decrease_health(self):
-        self.health -= 1
+        self.health -= 0.15
 
     def draw(self, screen, color):
         self.rect = pygame.draw.rect(screen, color, (self.x, self.y, self.width, self.height))
@@ -141,3 +163,24 @@ class Player:
         # Draw foreground of the health bar
         health_width = (self.health / 100) * bar_width  # Adjust width based on health percentage
         pygame.draw.rect(screen, (255, 0, 0), (health_bar_x, health_bar_y, health_width, bar_height))  # Red
+    
+    def check_collisions(self, collision_objects):
+        """
+        Check if the player collides with any objects in the list.
+        
+        :param collision_objects: List of objects with a rect attribute
+        :return: True if collision detected, False otherwise
+        """
+        player_rect = pygame.Rect(self.x, self.y, self.width, self.height)
+
+        for obj in collision_objects:
+            # Skip checking collision with self
+            if obj == self:
+                continue
+
+            barrier_rect = pygame.Rect(obj.x, obj.y, obj.width, obj.height)
+            
+            # Check for rectangle intersection
+            if player_rect.colliderect(barrier_rect):
+                return True
+        return False
