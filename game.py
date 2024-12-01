@@ -1,10 +1,14 @@
 import pygame
 import sys
 from player import Player
+from spaceship import Spaceship, ROOM_TILE_HEIGHT, ROOM_TILE_WIDTH
 
 # Screen dimensions
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 1920
+SCREEN_HEIGHT = 1080
+
+SPACESHIP_PADDING_TOP = (SCREEN_HEIGHT - (3*ROOM_TILE_HEIGHT)) // 2 
+SPACESHIP_PADDING_LEFT = (SCREEN_WIDTH - (13*ROOM_TILE_WIDTH)) // 2 
 
 # Colors
 WHITE = (255, 255, 255)
@@ -17,8 +21,8 @@ PLAYER_COLORS = [
 ]
 
 # Box dimensions
-BIG_BOX_WIDTH = 600
-BIG_BOX_HEIGHT = 400
+BIG_BOX_WIDTH = SCREEN_WIDTH
+BIG_BOX_HEIGHT = SCREEN_HEIGHT
 PLAYER_WIDTH = 50
 PLAYER_HEIGHT = 50
 PLAYER_SPEED = 5
@@ -31,6 +35,7 @@ class Game:
         pygame.display.set_caption("Tradership")
         self.clock = pygame.time.Clock()
         self.running = True
+        self.spaceShip = Spaceship()
 
         # Initialize the big box boundaries
         self.big_box_x = (SCREEN_WIDTH - BIG_BOX_WIDTH) // 2
@@ -95,6 +100,8 @@ class Game:
             2,
         )
 
+        self.spaceShip.draw(self.screen, SPACESHIP_PADDING_LEFT, SPACESHIP_PADDING_TOP)
+
         # Draw each player with a unique color
         for i, player in enumerate(self.players):
             player.draw(self.screen, PLAYER_COLORS[i])
@@ -112,6 +119,7 @@ class Game:
         # Quit Pygame
         pygame.quit()
         sys.exit()
+
 if __name__ == "__main__":
     game = Game()
     game.run()

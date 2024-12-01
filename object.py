@@ -2,8 +2,8 @@ import pygame
 import enum
 
 class ToolType(enum.Enum):
-    Wrench = "Wrench",
-    Weapon = "Weapon"
+    WRENCH = "Wrench",
+    WEAPON = "Weapon"
 
 class Object:
     def __init__(self, room_type, health):
