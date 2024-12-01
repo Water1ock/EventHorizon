@@ -86,7 +86,10 @@ class Game:
                 self.pickables.append(pickable)
 
         # Initialize enemy list
-        self.enemies = []
+        self.difficulty = 100  # Starting difficulty (you can tweak this starting value)
+        self.max_difficulty = 10000  # Maximum difficulty cap (you can tweak this)
+        self.difficulty_increase_rate = 10  # Rate at which difficulty increases (adjust as needed)
+        self.enemies = []  # List to hold enemies in the game
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -179,17 +182,19 @@ class Game:
                 player.action = None  # Reset action after handling
 
         # Randomly spawn enemies
-        if random.randint(1, 200) <= 5:  # 5% chance of spawning an enemy per frame
+        if self.difficulty < self.max_difficulty:
+                self.difficulty += self.difficulty_increase_rate
+        if random.randint(1, max((self.max_difficulty - self.difficulty),100)) <= 50:  # % chance of spawning an enemy per frame
             enemy_type = random.choice(list(EnemyType))
             x = random.randint(self.big_box_x, self.big_box_x + SCREEN_WIDTH - 40)
             y = random.randint(self.big_box_y, self.big_box_y + SCREEN_HEIGHT - 40)
 
             # Assign closest player as the target for PLAYER_ATTACKING type
-            target = None
-            if enemy_type == EnemyType.PLAYER_ATTACKING:
-                target = self.find_closest_player(x, y)
-            if enemy_type == EnemyType.OBJECT_ATTACKING:
-                target = self.spaceShip.find_closest_object(x, y, SPACESHIP_PADDING_TOP, SPACESHIP_PADDING_LEFT)
+            # target = None
+            # if enemy_type == EnemyType.PLAYER_ATTACKING:
+            target = self.find_closest_player(x, y)
+            # if enemy_type == EnemyType.OBJECT_ATTACKING:
+            #     target = self.spaceShip.find_closest_object(x, y, SPACESHIP_PADDING_TOP, SPACESHIP_PADDING_LEFT)
 
             new_enemy = Enemy(x=x, y=y, speed=2, enemy_type=enemy_type, target=target)
             self.enemies.append(new_enemy)
@@ -259,8 +264,8 @@ class Game:
         # Draw each enemy
         for enemy in self.enemies:
             enemy.draw(self.screen)
-        self.healthbar(self.fuel, (0,255,0), SCREEN_WIDTH//2-270, 50, 'Fuel')
-        self.healthbar(self.distance, (0,255,0), SCREEN_WIDTH//2-20, 50, 'Distance')
+        self.healthbar(int(((self.difficulty/self.max_difficulty)*100)), (0,255,0), SCREEN_WIDTH//2-270, 50, f'Difficulty {self.difficulty}')
+        self.healthbar(self.distance, (0,255,0), SCREEN_WIDTH//2-20, 50, 'Points')
         self.healthbar(self.damage, (255,0,0), SCREEN_WIDTH//2+250-20, 50, 'Damage')
 
         # Update the display
