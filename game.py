@@ -88,7 +88,7 @@ class Game:
         # Initialize enemy list
         self.difficulty = 100  # Starting difficulty (you can tweak this starting value)
         self.max_difficulty = 10000  # Maximum difficulty cap (you can tweak this)
-        self.difficulty_increase_rate = 10  # Rate at which difficulty increases (adjust as needed)
+        self.difficulty_increase_rate = 1  # Rate at which difficulty increases (adjust as needed)
         self.enemies = []  # List to hold enemies in the game
 
     def handle_events(self):
@@ -184,8 +184,9 @@ class Game:
         # Randomly spawn enemies
         if self.difficulty < self.max_difficulty:
                 self.difficulty += self.difficulty_increase_rate
-        if random.randint(1, max((self.max_difficulty - self.difficulty),100)) <= 50:  # % chance of spawning an enemy per frame
-            enemy_type = random.choice(list(EnemyType))
+        if random.randint(1, max((self.max_difficulty - self.difficulty),200)) <= 50:  # % chance of spawning an enemy per frame
+            # enemy_type = random.choice(list(EnemyType))
+            enemy_type = EnemyType.PLAYER_ATTACKING
             x = random.randint(self.big_box_x, self.big_box_x + SCREEN_WIDTH - 40)
             y = random.randint(self.big_box_y, self.big_box_y + SCREEN_HEIGHT - 40)
 
@@ -264,7 +265,7 @@ class Game:
         # Draw each enemy
         for enemy in self.enemies:
             enemy.draw(self.screen)
-        self.healthbar(int(((self.difficulty/self.max_difficulty)*100)), (0,255,0), SCREEN_WIDTH//2-270, 50, f'Difficulty {self.difficulty}')
+        self.healthbar(int(((self.difficulty/self.max_difficulty)*100)), (0,255,0), SCREEN_WIDTH//2-270, 50, 'Difficulty')
         self.healthbar(self.distance, (0,255,0), SCREEN_WIDTH//2-20, 50, 'Points')
         self.healthbar(self.damage, (255,0,0), SCREEN_WIDTH//2+250-20, 50, 'Damage')
 
